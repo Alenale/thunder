@@ -17,11 +17,11 @@ class DataStorage():
     def __setitem__(self, value):
         self.ref = value
 
-    def delete_item(self, ref_name, key_name, i):
-        del(self.db_root[ref_name][key_name][i])
+    def delete_item(self, ref, key, i):
+        del(self.db_root[ref][key][i])
 
-    def delete_key(self, ref_name, key_name):
-        del(self.db_root[ref_name][key_name])
+    def delete_key(self, ref, key):
+        del(self.db_root[ref][key])
 
     def finish(self):
         transaction.commit()
