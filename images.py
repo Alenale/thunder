@@ -3,34 +3,17 @@ import datetime
 import dpath
 from collections import defaultdict
 from database import DataStorage
+from geolocation import Geolocation
 
 img_dict = defaultdict(list)
 # Аттрибут класса DataStorage
 
 class Images(DataStorage):
-    # преобразовать долготу и ширину в строку перед вставкой в url
-    def __init__(self, lat, lon):
-        DataStorage.__init__(self, 'images')
-        self.lat = lat
-        self.lon = lon
 
-    # получить данные по координатам
-    # вытащить из них id'ники локаций
-    # latitude = '41.845300'
-    # longitude = '12.524698'
-    def get_location_id(self, lat, lon):
-        url = 'https://api.instagram.com/v1/'
-        access_token = "6918512031.3449bf9.51192f57c96c446fbb2ce0780a773d85"
-        distance = '5000'
-        location_id = []
-        request_url = (
-        url +'locations/search?lat='+lat+'&lng='+lon+'&distance='+distance+'&access_token='+access_token)
-        print('Get request url: %s' % (request_url))
-        location_info = requests.get(request_url).json()
-        location_id = [element['id'] for element in location_info['data']]
-        print('Location id:')
-        print(location_id)
-        return location_id
+    def __init__(self, location_id):
+        DataStorage.__init__(self, 'images')
+        self.location_id = location_id
+
 
     # по полученным локациям получить фотографии
     # для примера https://www.instagram.com/explore/locations/236889077/?__a=1
@@ -45,7 +28,7 @@ class Images(DataStorage):
         images_info = requests.get(request_url).json()
         ind_publication = 0
         length_info = len([element['node'] for element in images_info['graphql']['location']['edge_location_to_media']['edges']])
-        tags = ['rome', 'thunder', 'lightning', 'storm','thunderbolt', 'thunderstorm', 'thunderstruck', 'thunderbirds', 'thunderclouds', 'lightning', 'thunderup', 'heatlightning']
+        tags = ['thunder', 'lightning', 'storm','thunderbolt', 'thunderstorm', 'thunderstruck', 'thunderbirds', 'thunderclouds', 'lightning', 'thunderup', 'heatlightning']
         while ind_publication < length_info:
             ind_publication = str(ind_publication)
             is_video = dpath.util.get(images_info, '/graphql/location/edge_location_to_media/edges/' + ind_publication + '/node/is_video')
@@ -66,10 +49,9 @@ class Images(DataStorage):
                     print("Have found!")
                     loc_name = dpath.util.get(images_info, path_name)
                     img_time = dpath.util.get(images_info, path_time)
-                    time_inst = datetime.datetime.fromtimestamp(img_time).strftime('%Y-%m-%d %H:%M:%S')
                     img_dict['loc_name'].append(loc_name)
                     img_dict['image'].append(img)
-                    img_dict['time_inst'].append(time_inst)
+                    img_dict['time_inst'].append(img_time)
             else:
                 print("No text or it's video")
             ind_publication = int(ind_publication)
@@ -81,9 +63,10 @@ if __name__ == '__main__':
     print("Input latitude and logitude")
     lat = input()
     lon = input()
-    img = Images(lat, lon)
+    geolocation = Geolocation(lat, lon)
     loc_id = []
-    loc_id = img.get_location_id(lat, lon)
+    loc_id = geolocation.get_location_id(lat, lon)
+    img = Images(loc_id)
     for ind in loc_id:
         img.get_images(ind)
 
