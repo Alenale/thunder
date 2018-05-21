@@ -1,5 +1,4 @@
 import requests
-import datetime
 import dpath
 from collections import defaultdict
 from database import DataStorage
@@ -58,6 +57,7 @@ class Images(DataStorage):
             ind_publication += 1
         DataStorage.__setitem__(self, img_dict)
         DataStorage.finish(self)
+        print(img_dict)
 
 if __name__ == '__main__':
     print("Input latitude and logitude")
@@ -69,6 +69,3 @@ if __name__ == '__main__':
     img = Images(loc_id)
     for ind in loc_id:
         img.get_images(ind)
-
-
-

@@ -1,7 +1,4 @@
 import requests
-import datetime
-import dpath
-from collections import defaultdict
 
 class Geolocation():
 
@@ -20,7 +17,7 @@ class Geolocation():
                 url + 'locations/search?lat=' + latitude + '&lng=' + longitude + '&distance=' + distance + '&access_token=' + access_token)
         print('Get request url: %s' % (request_url))
         location_info = requests.get(request_url).json()
-        location_id = [element['id'] for element in location_info['data']]
+        location_id = [element['id'] for element in location_info['data'] if element['id']!=0 ]
         print('Location id:')
         print(location_id)
         return location_id
