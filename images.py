@@ -5,7 +5,6 @@ from database import DataStorage
 from geolocation import Geolocation
 
 img_dict = defaultdict(list)
-# Аттрибут класса DataStorage
 
 class Images(DataStorage):
 
@@ -14,11 +13,7 @@ class Images(DataStorage):
         self.location_id = location_id
 
 
-    # по полученным локациям получить фотографии
-    # для примера https://www.instagram.com/explore/locations/236889077/?__a=1
-    # https://www.instagram.com/explore/locations/{location_id}/?__a=1
-    # path /graphql/location/edge_location_to_media/edges/0/node/edge_media_to_caption/edges/0/node/text
-    # обращение к тексту картинки images_info['graphql']['location']['edge_location_to_media']['edges'][i]['node']['edge_media_to_caption']['edges'][0]['node']
+    # получить фотографии по локациям
     def get_images(self, location_id):
         text_list = []
         image_info_url = 'https://www.instagram.com/explore/locations/'
@@ -42,7 +37,7 @@ class Images(DataStorage):
                 img = dpath.util.get(images_info, path_img)
                 # поиск вхождения ключевых слов в описание
                 find_in_str = [x for x in tags if text.find(x) > -1]
-                # сохранить названия геолокации, ссылки, времени фотографии в бд в виде списка значений ключей
+                # сохранить названия геолокации, ссылки, времени фотографии в бд в виде списка значений
                 if len(find_in_str) > 0 :
                     # получить название геолокации и дату
                     print("Have found!")
